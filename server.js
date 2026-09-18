@@ -8,6 +8,7 @@ const app=express();
 app.disable('x-powered-by');
 installSecurity(app);
 app.use(express.json({limit:'2mb'}));
+app.get('/api/health',(req,res)=>res.status(200).json({ok:true,service:'Produção Consciente'}));
 app.use('/api',validateBody);
 app.use('/api/v1',rateLimit('api-ip',600,60));
 
@@ -32,6 +33,9 @@ app.get('/api/v1/health',async(req,res)=>{
     res.json({ok:true,service:'Produção Consciente',database:'mysql',...(process.env.NODE_ENV!=='production'?{databaseName:db.DB_NAME}:{})});
   }catch(e){res.status(503).json({ok:false,error:'Banco de dados indisponível'})}
 });
+
+// Qualquer rota API desconhecida termina em JSON, inclusive POST/PUT/DELETE.
+app.use('/api',(req,res)=>res.status(404).json({error:'Rota da API não encontrada'}));
 
 // Somente recursos públicos: nunca servir código do servidor ou arquivos do banco.
 for(const dir of ['css','js','assets']) app.use('/'+dir,express.static(path.join(__dirname,dir),{index:false,dotfiles:'deny'}));

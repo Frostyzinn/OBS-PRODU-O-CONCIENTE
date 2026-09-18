@@ -15,8 +15,8 @@ router.post('/login',rateLimit('login-ip',30,900),rateLimit('login-account',10,9
  const matches=await bcrypt.compare(password,u?.password_hash||dummyHash);
  if(!u||!matches)return res.status(401).json({error:'E-mail ou senha inválidos.'});
  if(u.status!=='active'||!u.company_id||u.companyStatus!=='active')return res.status(403).json({error:'Acesso indisponível. Procure o administrador da empresa.'});
- await issueSession(req,res,u.id,u.password_hash);req.user=publicUser(u);await audit(req,'login','user',u.id);
- res.json({user:publicUser(u)});
+ const token=await issueSession(req,res,u.id,u.password_hash);req.user=publicUser(u);await audit(req,'login','user',u.id);
+ res.json({user:publicUser(u),...(token?{token}: {})});
 }));
 router.post('/logout',ah(async(req,res)=>{await logout(req,res);res.status(204).end()}));
 router.get('/me',auth,ah(async(req,res)=>{

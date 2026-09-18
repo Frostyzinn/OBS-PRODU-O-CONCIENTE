@@ -21,6 +21,7 @@ A prévia desta revisão usa o banco isolado `pc_revisao_20260918` e http://loca
 - `npm run build`: prepara somente arquivos públicos em `public/` para Vercel.
 - `npm run test:integration`: testa fluxos operacionais com a prévia ativa na porta 3001.
 - `npm run test:security`: testa segurança no banco isolado, usando um servidor temporário.
+- `npm run test:routing`: verifica a entrada serverless, JWT, cookies e arquivos estáticos no banco isolado.
 - `npm audit`: consulta vulnerabilidades conhecidas das dependências.
 
 Consulte [HOSPEDAGEM.md](HOSPEDAGEM.md), [DEPLOY_VERCEL.md](DEPLOY_VERCEL.md) e [SEGURANCA.md](SEGURANCA.md) para configuração, proteções implementadas e limites atuais.

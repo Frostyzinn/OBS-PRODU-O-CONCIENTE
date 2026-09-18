@@ -1,9 +1,11 @@
 const {randomBytes,createHash}=require('node:crypto');
+const {signSession,bearerSession}=require('../utils/jwt');
 const {get,run,transaction}=require('../db/database');
 const production=process.env.NODE_ENV==='production';
 const cookieName=production?'__Host-pc_session':'pc_session';
 const cookieOptions={httpOnly:true,secure:production,sameSite:'strict',path:'/'};
 function sessionHash(req){
+ if(req.headers.authorization!==undefined)return bearerSession(req.headers.authorization);
  const values=String(req.headers.cookie||'').split(';').map(v=>v.trim()).filter(v=>v.startsWith(cookieName+'='));
  if(values.length!==1)return null;
  const token=values[0].slice(cookieName.length+1);
@@ -11,6 +13,7 @@ function sessionHash(req){
 }
 async function issueSession(req,res,userId,expectedHash){
  const token=randomBytes(32).toString('hex'),hash=createHash('sha256').update(token).digest('hex');
+ const bearer=req.body?.authMode==='bearer'?signSession(userId,hash):null;
  await transaction(async tx=>{
   const user=await tx.get('SELECT password_hash,status FROM users WHERE id=? FOR UPDATE',[userId]);
   if(!user||user.status!=='active'||user.password_hash!==expectedHash)throw Object.assign(new Error('A conta foi alterada. Entre novamente.'),{status:401});
@@ -19,6 +22,7 @@ async function issueSession(req,res,userId,expectedHash){
   await tx.run('INSERT INTO user_sessions(token_hash,user_id,expires_at,last_seen_at) VALUES(?,?,DATE_ADD(UTC_TIMESTAMP(),INTERVAL 8 HOUR),UTC_TIMESTAMP())',[hash,userId]);
  });
  res.cookie(cookieName,token,{...cookieOptions,maxAge:8*60*60*1000});
+ return bearer;
 }
 function clearSession(res){res.clearCookie(cookieName,cookieOptions)}
 async function logout(req,res){const hash=sessionHash(req);if(hash)await run('DELETE FROM user_sessions WHERE token_hash=?',[hash]);clearSession(res)}

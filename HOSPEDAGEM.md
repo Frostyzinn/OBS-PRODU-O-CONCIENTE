@@ -23,7 +23,7 @@ Este projeto precisa de um servidor Node.js/Express e de MySQL. Minha recomenda�
 
 Use referências às variáveis do MySQL no painel do Railway. Os nomes fornecidos pelo provedor podem ser diferentes dos nomes `MYSQL_*` esperados por esta aplicação. O servidor usa a variável PORT fornecida pela hospedagem.
 
-Antes de iniciar em produção, execute `npm run db:init` com uma credencial de migração. No serviço público use uma credencial restrita a SELECT, INSERT, UPDATE e DELETE no banco. A autenticação usa sessões HttpOnly; JWT_SECRET e CORS_ORIGIN não são mais utilizados. Consulte SEGURANCA.md para configurar o proxy, os limites de acesso e os requisitos de publicação.
+Antes de iniciar em produção, execute `npm run db:init` com uma credencial de migração. No serviço público use uma credencial restrita a SELECT, INSERT, UPDATE e DELETE no banco. A autenticação usa sessões HttpOnly; JWT_SECRET é opcional para clientes JWT Bearer. CORS_ORIGIN aceita origem exata como alternativa a APP_ORIGIN; consulte DEPLOY_VERCEL.md. Consulte SEGURANCA.md para configurar o proxy, os limites de acesso e os requisitos de publicação.
 
 5. Gere um domínio público para a aplicação e confira `/api/v1/health`.
 6. Abra `/login.html`, use “Cadastrar acesso” e crie sua empresa.

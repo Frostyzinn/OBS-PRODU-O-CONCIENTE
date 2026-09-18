@@ -2,11 +2,11 @@
 
 ## Proteções implementadas
 
-- Sessões opacas de 256 bits geradas com `crypto.randomBytes`. Somente o hash SHA-256 fica no MySQL. O identificador não é devolvido no JSON nem armazenado em localStorage/sessionStorage.
+- Sessões opacas de 256 bits geradas com `crypto.randomBytes`. Somente o hash SHA-256 fica no MySQL. Na navegação web, o identificador não é devolvido no JSON nem armazenado em localStorage/sessionStorage. Clientes que solicitam authMode=bearer recebem um JWT HS256 de 15 minutos, com issuer/audience e vínculo à sessão revogável, assinado exclusivamente por JWT_SECRET do ambiente.
 - Cookie HttpOnly e SameSite=Strict. Em produção, Secure e prefixo `__Host-`, sem Domain e com Path=/.
 - Expiração imposta pelo servidor: 30 minutos de inatividade e 8 horas absolutas. Logout revoga a sessão; alteração de senha revoga todas. Mudança de perfil/bloqueio revoga as sessões do usuário afetado.
 - Consulta do perfil, vínculo e status da empresa no servidor em cada requisição autenticada.
-- Proteção contra CSRF por origem exata, Fetch Metadata, JSON e cabeçalho customizado nas operações de escrita. A API não libera CORS para terceiros.
+- Proteção contra CSRF por origem exata, Fetch Metadata, JSON e cabeçalho customizado nas operações de escrita. A API exige origem exata, configurada em APP_ORIGIN ou CORS_ORIGIN; valores amplos não liberam terceiros.
 - Limites compartilhados no MySQL: 600 requisições/minuto por IP na API; login 30/15 minutos por IP e 10/15 minutos por e-mail; cadastro/solicitação 5/hora por IP; consulta CNPJ 30/15 minutos; alterações de conta 12/15 minutos por usuário. Valores de IP/e-mail são transformados em hash para os contadores.
 - Helmet: CSP restringe scripts à própria origem e bloqueia scripts inline, objetos, enquadramento e bases externas; proteção contra MIME sniffing e política sem referer. Estilos inline continuam permitidos para os indicadores dinâmicos.
 - HTTPS/HSTS e cookies Secure no ambiente de produção; APP_ORIGIN obrigatório com HTTPS. O TLS deve ser terminado/configurado no provedor.

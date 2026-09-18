@@ -4,8 +4,14 @@ const {transaction,run}=require('../db/database');
 let lastCleanup=0;
 const production=process.env.NODE_ENV==='production';
 const csp={defaultSrc:["'self'"],scriptSrc:["'self'"],scriptSrcAttr:["'none'"],styleSrc:["'self'","'unsafe-inline'"],imgSrc:["'self'",'data:'],fontSrc:["'self'"],connectSrc:["'self'"],objectSrc:["'none'"],frameAncestors:["'none'"],baseUri:["'none'"],formAction:["'self'"],upgradeInsecureRequests:production?[]:null};
+function configuredOrigin(){
+ const explicit=process.env.APP_ORIGIN;
+ const cors=process.env.CORS_ORIGIN;
+ const vercel=process.env.VERCEL_URL;
+ return explicit||(cors&&!['true','false','*'].includes(cors)?cors:undefined)||(vercel?'https://'+vercel:undefined);
+}
 function installSecurity(app){
- if(production&&(!process.env.APP_ORIGIN||!/^https:\/\/[^/]+$/.test(process.env.APP_ORIGIN)))throw new Error('APP_ORIGIN deve ser a origem HTTPS pública, sem barra final.');
+ if(production&&(!configuredOrigin()||!/^https:\/\/[^/]+$/.test(configuredOrigin())))throw new Error('Configure APP_ORIGIN ou CORS_ORIGIN com a origem HTTPS pública, sem barra final.');
  if(production&&process.env.MYSQL_AUTO_CREATE_DATABASE!=='false')throw new Error('Defina MYSQL_AUTO_CREATE_DATABASE=false em produção.');
  if(production&&process.env.MYSQL_SSL==='true'&&process.env.MYSQL_SSL_REJECT_UNAUTHORIZED==='false')throw new Error('A verificação do certificado MySQL é obrigatória em produção.');
  // Configure somente proxies conhecidos; não confiar indiscriminadamente em X-Forwarded-For.
@@ -15,7 +21,7 @@ function installSecurity(app){
  app.use('/api',(req,res,next)=>{
   res.setHeader('Cache-Control','no-store');
   const origin=req.headers.origin;
-  const allowed=process.env.APP_ORIGIN||`${req.protocol}://${req.get('host')}`;
+  const allowed=configuredOrigin()||`${req.protocol}://${req.get('host')}`;
   if(origin&&origin!==allowed)return res.status(403).json({error:'Origem da requisição não autorizada.'});
   if(req.headers['sec-fetch-site']==='cross-site')return res.status(403).json({error:'Requisição entre sites bloqueada.'});
   if(!['GET','HEAD','OPTIONS'].includes(req.method)){

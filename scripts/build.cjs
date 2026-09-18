@@ -8,7 +8,7 @@ const config = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'
 if (config.framework !== null || config.outputDirectory !== 'public') {
   throw new Error('Vercel: use framework=null (Other) e outputDirectory=public.');
 }
-for (const entry of ['api/index.js', 'api/[...path].js', 'server.js']) {
+for (const entry of ['api/index.js', 'server.js']) {
   if (!fs.existsSync(path.join(root, entry))) throw new Error(`Entrada ausente: ${entry}`);
 }
 fs.mkdirSync(output, { recursive: true });

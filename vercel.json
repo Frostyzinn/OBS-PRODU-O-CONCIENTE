@@ -4,9 +4,6 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 30
-    },
-    "api/[...path].js": {
-      "maxDuration": 30
     }
   },
   "buildCommand": "npm run build",
@@ -40,6 +37,12 @@
           "value": "max-age=31536000; includeSubDomains"
         }
       ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index"
     }
   ]
 }
