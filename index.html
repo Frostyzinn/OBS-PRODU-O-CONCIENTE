@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Produção Consciente — Painel</title>
+<link rel="stylesheet" href="css/tokens.css"><link rel="stylesheet" href="css/layout.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/motion.css">
+<link rel="icon" type="image/png" href="assets/logo-producao-consciente.png"></head><body data-page="dashboard">
+<aside class="sidebar"><div class="brand"><span class="brand-mark logo-mark"><img src="assets/logo-producao-consciente.png" alt="Logo Produção Consciente"></span><div><strong>Produção</strong><small>Consciente</small></div></div>
+<nav>
+<a href="index.html" data-nav="index.html">▦ <span>Painel</span></a>
+<a href="produtos.html" data-nav="produtos.html">▧ <span>Produtos</span></a>
+<a href="estoque.html" data-nav="estoque.html">▤ <span>Estoque</span></a>
+<a href="producao.html" data-nav="producao.html">▣ <span>Produção</span></a>
+<a href="planejamento.html" data-nav="planejamento.html">◫ <span>Planejamento</span></a>
+<a href="historico-vendas.html" data-nav="historico-vendas.html">◳ <span>Vendas</span></a>
+<a href="compradores.html" data-nav="compradores.html">◎ <span>Compradores</span></a>
+<a href="calculadora-cpp.html" data-nav="calculadora-cpp.html">⌁ <span>Calculadora CPP</span></a>
+<a href="relatorio-cpp.html" data-nav="relatorio-cpp.html">◈ <span>Relatório CPP</span></a>
+<a href="relatorios.html" data-nav="relatorios.html">▥ <span>Relatórios</span></a>
+<a href="metas.html" class="admin-only" data-nav="metas.html">◆ <span>Metas</span></a>
+<a href="equipe.html" class="admin-only" data-nav="equipe.html">◉ <span>Equipe</span></a>
+<a href="configuracoes.html" data-nav="configuracoes.html">⚙ <span>Configurações</span></a>
+</nav>
+<div class="sidebar-bottom"><a href="apresentacao.html">Sobre o sistema</a><a href="login.html" onclick="sessionStorage.clear()">Sair</a></div></aside>
+<main class="main"><header class="topbar"><div><p class="eyebrow">PAINEL DE CONTROLE</p><h1>Painel</h1><p class="muted">Visão da demanda e da produção informadas pela empresa.</p></div><div class="actions"><a class="btn secondary" href="calculadora-cpp.html">Calculadora CPP</a><a class="btn primary" href="produtos.html">+ Novo produto</a></div></header>
+<section class="notice"><strong>Como funciona:</strong> informe produtos e histórico de vendas. A demanda prevista e o excedente são calculados automaticamente pela Média Móvel Simples. O CPP é uma etapa posterior.</section>
+<section class="kpi-grid">
+<article class="kpi neutral"><span>Demanda prevista</span><strong id="kpi-demand">0</strong><small>unidades</small></article>
+<article class="kpi neutral"><span>Produção atual</span><strong id="kpi-production">0</strong><small>unidades</small></article>
+<article class="kpi warning"><span>Excedente</span><strong id="kpi-surplus">0</strong><small>unidades</small></article>
+<article class="kpi success"><span>Economia estimada</span><strong id="kpi-saving">R$ 0,00</strong><small>antes do CPP</small></article>
+</section>
+<section class="grid-2">
+<article class="panel"><div class="panel-head"><div><p class="eyebrow">PREVISÃO</p><h2>Média Móvel Simples</h2></div><span class="badge blue" id="periods-label">0 períodos</span></div><canvas id="demandChart" height="230"></canvas></article>
+<article class="panel"><div class="panel-head"><div><p class="eyebrow">RESUMO</p><h2>Situação da produção</h2></div></div><div id="summaryBox" class="summary-box"></div></article>
+</section>
+<section class="panel"><div class="panel-head"><div><p class="eyebrow">PRODUTOS</p><h2>Produtos cadastrados</h2></div><a href="produtos.html" class="text-link">Gerenciar →</a></div>
+<div class="table-wrap"><table><thead><tr><th>Produto</th><th>Unidade</th><th>Demanda prevista</th><th>Produção atual</th><th>Excedente</th><th>Status</th></tr></thead><tbody id="productsTable"></tbody></table></div></section>
+<section class="metric-grid dashboard-control" id="controlMetrics"><article class="metric-card"><span>Ordens abertas</span><strong id="dash-open-orders">—</strong><small>planejadas ou em produção</small></article><article class="metric-card"><span>Insumos em reposição</span><strong id="dash-low-stock">—</strong><small>abaixo do estoque mínimo</small></article><article class="metric-card"><span>Economia CPP</span><strong id="dash-cpp-saving">—</strong><small>últimos 90 dias</small></article><article class="metric-card"><span>Vendas recentes</span><strong id="dash-sales">—</strong><small>últimos 6 períodos</small></article></section></main><script src="js/utils.js"></script><script src="js/data.js"></script><script src="js/render.js"></script><script src="js/operations.js"></script><script src="js/main.js"></script><script src="js/motion.js"></script></body></html>

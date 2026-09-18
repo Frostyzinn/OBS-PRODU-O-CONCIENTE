@@ -1,0 +1,15 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Relatórios — Produção Consciente</title><link rel="stylesheet" href="css/tokens.css"><link rel="stylesheet" href="css/layout.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/motion.css"><link rel="icon" type="image/png" href="assets/logo-producao-consciente.png"></head><body><aside class="sidebar"><div class="brand"><span class="brand-mark logo-mark"><img src="assets/logo-producao-consciente.png" alt="Logo Produção Consciente"></span><div><strong>Produção</strong><small>Consciente</small></div></div><nav>
+<a href="index.html" data-nav="index.html">▦ <span>Painel</span></a>
+<a href="produtos.html" data-nav="produtos.html">▧ <span>Produtos</span></a>
+<a href="estoque.html" data-nav="estoque.html">▤ <span>Estoque</span></a>
+<a href="producao.html" data-nav="producao.html">▣ <span>Produção</span></a>
+<a href="planejamento.html" data-nav="planejamento.html">◫ <span>Planejamento</span></a>
+<a href="historico-vendas.html" data-nav="historico-vendas.html">◳ <span>Vendas</span></a>
+<a href="compradores.html" data-nav="compradores.html">◎ <span>Compradores</span></a>
+<a href="calculadora-cpp.html" data-nav="calculadora-cpp.html">⌁ <span>Calculadora CPP</span></a>
+<a href="relatorio-cpp.html" data-nav="relatorio-cpp.html">◈ <span>Relatório CPP</span></a>
+<a href="relatorios.html" data-nav="relatorios.html">▥ <span>Relatórios</span></a>
+<a href="metas.html" class="admin-only" data-nav="metas.html">◆ <span>Metas</span></a>
+<a href="equipe.html" class="admin-only" data-nav="equipe.html">◉ <span>Equipe</span></a>
+<a href="configuracoes.html" data-nav="configuracoes.html">⚙ <span>Configurações</span></a>
+</nav><div class="sidebar-bottom"><a href="apresentacao.html">Sobre o sistema</a><a href="login.html" onclick="sessionStorage.clear()">Sair</a></div></aside><main class="main"><header class="topbar"><div><p class="eyebrow">CENTRAL DE CONTROLE</p><h1>Relatórios gerenciais</h1><p class="muted">Uma visão consolidada para decisões de produção, estoque e eficiência.</p></div><button class="btn secondary" onclick="window.print()">Imprimir</button></header><div id="managementReport"><div class="notice">Carregando indicadores…</div></div><section class="panel admin-only"><div class="panel-head"><div><p class="eyebrow">AUDITORIA</p><h2>Últimos eventos</h2><p class="muted small-text">Rastreabilidade administrativa e operacional.</p></div></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Usuário</th><th>Ação</th><th>Entidade</th><th>ID</th><th>Detalhes</th></tr></thead><tbody id="auditTable"></tbody></table></div></section></main><script src="js/utils.js"></script><script src="js/data.js"></script><script src="js/operations.js"></script><script src="js/main.js"></script><script src="js/motion.js"></script></body></html>

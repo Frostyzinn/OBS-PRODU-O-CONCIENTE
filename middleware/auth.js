@@ -1,0 +1,6 @@
+const jwt=require('jsonwebtoken');
+const {get}=require('../db/database');
+const secret=process.env.JWT_SECRET||'dev-secret-change-me';
+async function auth(req,res,next){const h=req.headers.authorization||'';const token=h.startsWith('Bearer ')?h.slice(7):null;if(!token)return res.status(401).json({error:'Token não informado'});try{const decoded=jwt.verify(token,secret);const u=await get('SELECT u.id,u.name,u.email,u.company_id AS companyId,u.role,u.status,c.trade_name AS companyName,c.status AS companyStatus FROM users u LEFT JOIN companies c ON c.id=u.company_id WHERE u.id=?',[decoded.id]);if(!u)return res.status(401).json({error:'Usuário não encontrado'});if(u.status!=='active')return res.status(403).json({error:u.status==='pending'?'Acesso aguardando aprovação.':'Acesso bloqueado.'});if(!u.companyId||u.companyStatus!=='active')return res.status(403).json({error:'Empresa sem acesso ativo'});req.user=u;next();}catch{return res.status(401).json({error:'Token inválido ou expirado'})}}
+function requireRole(...roles){return(req,res,next)=>{if(!req.user?.companyId)return res.status(403).json({error:'Usuário sem empresa vinculada'});if(!roles.includes(req.user.role))return res.status(403).json({error:'Você não tem permissão para esta ação'});next();};}
+module.exports={auth,requireRole,secret};

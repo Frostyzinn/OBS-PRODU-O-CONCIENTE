@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calculadora CPP — Produção Consciente</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/motion.css">
+<link rel="icon" type="image/png" href="assets/logo-producao-consciente.png"></head>
+<body>
+<aside class="sidebar">
+  <div class="brand"><span class="brand-mark logo-mark"><img src="assets/logo-producao-consciente.png" alt="Logo Produção Consciente"></span><div><strong>Produção</strong><small>Consciente</small></div></div>
+  <nav>
+<a href="index.html" data-nav="index.html">▦ <span>Painel</span></a>
+<a href="produtos.html" data-nav="produtos.html">▧ <span>Produtos</span></a>
+<a href="estoque.html" data-nav="estoque.html">▤ <span>Estoque</span></a>
+<a href="producao.html" data-nav="producao.html">▣ <span>Produção</span></a>
+<a href="planejamento.html" data-nav="planejamento.html">◫ <span>Planejamento</span></a>
+<a href="historico-vendas.html" data-nav="historico-vendas.html">◳ <span>Vendas</span></a>
+<a href="compradores.html" data-nav="compradores.html">◎ <span>Compradores</span></a>
+<a href="calculadora-cpp.html" data-nav="calculadora-cpp.html">⌁ <span>Calculadora CPP</span></a>
+<a href="relatorio-cpp.html" data-nav="relatorio-cpp.html">◈ <span>Relatório CPP</span></a>
+<a href="relatorios.html" data-nav="relatorios.html">▥ <span>Relatórios</span></a>
+<a href="metas.html" class="admin-only" data-nav="metas.html">◆ <span>Metas</span></a>
+<a href="equipe.html" class="admin-only" data-nav="equipe.html">◉ <span>Equipe</span></a>
+<a href="configuracoes.html" data-nav="configuracoes.html">⚙ <span>Configurações</span></a>
+</nav>
+  <div class="sidebar-bottom"><a href="apresentacao.html">Sobre o sistema</a><a href="login.html" onclick="sessionStorage.clear()">Sair</a></div>
+</aside>
+
+<main class="main cpp-main">
+<header class="topbar">
+  <div><p class="eyebrow">SIMULAÇÃO</p><h1>Calculadora CPP</h1><p class="muted">Simulação de Produção Programada via Média Móvel Simples.</p></div>
+</header>
+
+<div class="cpp-stepper" id="stepper">
+  <div class="step active" data-step="1"><span>1</span><b>Produto</b></div>
+  <div class="step" data-step="2"><span>2</span><b>Histórico</b></div>
+  <div class="step" data-step="3"><span>3</span><b>Produção Atual</b></div>
+  <div class="step" data-step="4"><span>4</span><b>Resultado</b></div>
+</div>
+
+<section class="cpp-card">
+  <div class="cpp-step-panel" data-panel="1">
+    <h2>Selecione o produto</h2>
+    <p class="helper">Escolha o produto que será analisado na simulação.</p>
+    <div id="cppProducts" class="choice-list"></div>
+    <div class="field-block">
+      <label>Número de meses para MMS (N)</label>
+      <div class="number-options" id="mmsOptions">
+        <button type="button" data-n="3" class="selected">3</button>
+        <button type="button" data-n="4">4</button>
+        <button type="button" data-n="5">5</button>
+        <button type="button" data-n="6">6</button>
+      </div>
+      <small>Recomendamos N≥3 para maior confiabilidade.</small>
+    </div>
+  </div>
+
+  <div class="cpp-step-panel hidden" data-panel="2">
+    <h2>Histórico de vendas</h2>
+    <p class="helper">Informe a quantidade vendida em cada mês. Serão usados os últimos <b id="monthsText">3</b> meses.</p>
+    <div id="historyFields" class="history-fields"></div>
+    <div class="inline-tip">A previsão será calculada automaticamente pela média dos períodos preenchidos.</div>
+  </div>
+
+  <div class="cpp-step-panel hidden" data-panel="3">
+    <h2>Produção atual</h2>
+    <p class="helper">Informe quanto você produz atualmente e o custo por unidade.</p>
+    <div class="form-grid">
+      <label>Produção atual (unidades)<input id="currentProduction" type="number" min="0" step="1" placeholder="4200"></label>
+      <label>Custo por unidade (R$)<input id="unitCost" type="number" min="0" step="0.01" placeholder="77,00"></label>
+      <label>Energia estimada por unidade (kWh)<input id="energyPerUnit" type="number" min="0" step="0.01" placeholder="0,50"></label>
+      <label>Custo da energia (R$/kWh)<input id="energyCost" type="number" min="0" step="0.01" placeholder="0,80"></label>
+    </div>
+    <div class="field-block material-block">
+      <div class="panel-head"><div><h3>Matérias-primas</h3><small class="muted">Opcional — usada para detalhar a redução possível.</small></div><button type="button" class="btn secondary" id="addMaterial">+ Adicionar</button></div>
+      <div id="materials"></div>
+    </div>
+  </div>
+
+  <div class="cpp-step-panel hidden" data-panel="4">
+    <div class="result-head"><div><p class="eyebrow">RESULTADO DA SIMULAÇÃO</p><h2>Resultado da Simulação</h2></div><div class="actions"><button class="btn secondary" id="printResult">▧ Prévia</button><button class="btn primary" id="exportResult">⇩ Exportar PDF</button><button class="btn secondary" id="exportCsv">⇩ CSV</button></div></div>
+    <div class="result-kpis">
+      <article><span>Demanda Prevista (MMS)</span><strong id="rDemand">0</strong><small>unidades/mês</small></article>
+      <article><span>Produção Atual</span><strong id="rProduction">0</strong><small>unidades/mês</small></article>
+      <article class="amber-card"><span>Excedente de Produção</span><strong id="rSurplus">0</strong><small>unidades</small></article>
+      <article class="green-card"><span>Redução Financeira</span><strong id="rSaving">R$ 0,00</strong><small>/mês</small></article>
+    </div>
+    <div class="breakdown">
+      <div class="eyebrow">DETALHAMENTO DA REDUÇÃO POSSÍVEL</div>
+      <div id="materialResult"></div>
+      <div class="financial-result"><span>Financeira<br><small id="financialFormula"></small></span><strong id="financialTotal">R$ 0,00/mês</strong></div>
+    </div>
+  </div>
+
+  <div class="cpp-footer">
+    <button type="button" class="btn secondary" id="backBtn">Voltar</button>
+    <button type="button" class="btn primary" id="nextBtn">Continuar&nbsp; ›</button>
+  </div>
+</section>
+</main>
+<script src="js/utils.js"></script><script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script src="js/cpp.js"></script>
+<script src="js/motion.js"></script></body>
+</html>

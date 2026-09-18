@@ -1,0 +1,12 @@
+const router=require('express').Router();const {all}=require('../db/database');const {auth}=require('../middleware/auth');const ah=require('../utils/asyncHandler');const {companyId}=require('../utils/tenant');
+router.get('/management',auth,ah(async(req,res)=>{const c=companyId(req);const [products,stock,orders,sales,cpp,goals,buyers]=await Promise.all([
+ all(`SELECT COUNT(*) total,COALESCE(SUM(current_production),0) production,COALESCE(SUM(current_production*unit_cost),0) productionValue FROM products WHERE company_id=?`,[c]),
+ all(`SELECT COUNT(*) total,SUM(CASE WHEN current_stock<=min_stock THEN 1 ELSE 0 END) lowStock,COALESCE(SUM(current_stock*unit_cost),0) stockValue FROM raw_materials WHERE company_id=?`,[c]),
+ all(`SELECT COUNT(*) total,SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END) completed,SUM(CASE WHEN status IN ('planned','in_progress') THEN 1 ELSE 0 END) open,SUM(planned_quantity) planned,SUM(produced_quantity) produced FROM production_orders WHERE company_id=? AND planned_date>=DATE_SUB(CURDATE(),INTERVAL 30 DAY)`,[c]),
+ all(`SELECT COALESCE(SUM(quantity),0) total FROM sales_histories WHERE company_id=? AND period>=DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 5 MONTH),'%Y-%m')`,[c]),
+ all(`SELECT COUNT(*) total,COALESCE(SUM(financial_reduction),0) saving,COALESCE(SUM(surplus),0) surplus FROM cpp_reports WHERE company_id=? AND created_at>=DATE_SUB(NOW(),INTERVAL 90 DAY)`,[c]),
+ all(`SELECT id,title,metric,target_value targetValue,current_value currentValue,ROUND(CASE WHEN target_value=0 THEN 0 ELSE current_value/target_value*100 END,1) progress,period,status FROM company_goals WHERE company_id=? AND status='active' ORDER BY period DESC`,[c]),
+ all(`SELECT COUNT(*) total,COALESCE(AVG(average_volume),0) avgVolume FROM buyers WHERE company_id=?`,[c])
+]);res.json({products:products[0]||{},stock:stock[0]||{},orders:orders[0]||{},sales:sales[0]||{},cpp:cpp[0]||{},goals,buyers:buyers[0]||{}})}));
+router.get('/audit',auth,ah(async(req,res)=>{if(req.user.role!=='admin')return res.status(403).json({error:'Apenas administradores podem consultar auditoria.'});const rows=await all(`SELECT a.id,a.action,a.entity,a.entity_id AS entityId,a.metadata,a.created_at AS createdAt,u.name AS userName FROM audit_logs a LEFT JOIN users u ON u.id=a.user_id WHERE a.company_id=? ORDER BY a.created_at DESC LIMIT 300`,[companyId(req)]);res.json(rows)}));
+module.exports=router;

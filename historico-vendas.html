@@ -1,0 +1,16 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Histórico — Produção Consciente</title><link rel="stylesheet" href="css/tokens.css"><link rel="stylesheet" href="css/layout.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/motion.css"><link rel="icon" type="image/png" href="assets/logo-producao-consciente.png"></head><body><aside class="sidebar"><div class="brand"><span class="brand-mark logo-mark"><img src="assets/logo-producao-consciente.png" alt="Logo Produção Consciente"></span><div><strong>Produção</strong><small>Consciente</small></div></div><nav>
+<a href="index.html" data-nav="index.html">▦ <span>Painel</span></a>
+<a href="produtos.html" data-nav="produtos.html">▧ <span>Produtos</span></a>
+<a href="estoque.html" data-nav="estoque.html">▤ <span>Estoque</span></a>
+<a href="producao.html" data-nav="producao.html">▣ <span>Produção</span></a>
+<a href="planejamento.html" data-nav="planejamento.html">◫ <span>Planejamento</span></a>
+<a href="historico-vendas.html" data-nav="historico-vendas.html">◳ <span>Vendas</span></a>
+<a href="compradores.html" data-nav="compradores.html">◎ <span>Compradores</span></a>
+<a href="calculadora-cpp.html" data-nav="calculadora-cpp.html">⌁ <span>Calculadora CPP</span></a>
+<a href="relatorio-cpp.html" data-nav="relatorio-cpp.html">◈ <span>Relatório CPP</span></a>
+<a href="relatorios.html" data-nav="relatorios.html">▥ <span>Relatórios</span></a>
+<a href="metas.html" class="admin-only" data-nav="metas.html">◆ <span>Metas</span></a>
+<a href="equipe.html" class="admin-only" data-nav="equipe.html">◉ <span>Equipe</span></a>
+<a href="configuracoes.html" data-nav="configuracoes.html">⚙ <span>Configurações</span></a>
+</nav><div class="sidebar-bottom"><a href="apresentacao.html">Sobre o sistema</a><a href="login.html" onclick="sessionStorage.clear()">Sair</a></div></aside><main class="main"><header class="topbar"><div><p class="eyebrow">DADOS DE VENDA</p><h1>Histórico de vendas</h1><p class="muted">Edite os períodos e quantidades. O Painel usa estes dados para calcular a MMS.</p></div><label class="btn secondary file-btn">Importar CSV<input type="file" id="csvFile" accept=".csv,text/csv"></label></header>
+<section class="panel"><div class="panel-head"><h2>Períodos</h2><button class="btn secondary" id="addSale">+ Adicionar período</button></div><div id="csvFeedback"></div><div class="table-wrap"><table><thead><tr><th>Mês/Ano</th><th>Produto</th><th>Quantidade vendida</th><th>Status</th></tr></thead><tbody id="salesTable"></tbody></table></div><div class="actions"><button class="btn primary" id="saveSales">Salvar alterações</button><span id="salesMsg" class="form-msg"></span></div></section></main><script src="js/utils.js"></script><script src="js/data.js"></script><script src="js/render.js"></script><script src="js/main.js"></script><script src="js/motion.js"></script></body></html>

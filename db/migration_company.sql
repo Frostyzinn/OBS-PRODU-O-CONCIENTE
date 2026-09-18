@@ -1,0 +1,4 @@
+-- Para instalações antigas, prefira iniciar o servidor: db/database.js executa a migração segura automaticamente.
+-- Se desejar inspecionar manualmente:
+-- SELECT * FROM companies;
+-- SELECT id,name,email,company_id,role,status FROM users;
