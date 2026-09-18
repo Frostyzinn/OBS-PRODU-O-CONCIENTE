@@ -130,7 +130,7 @@ $('#exportCsv')?.addEventListener('click',()=>{
   if(!state.lastResult)return showStatus('Conclua uma simulação antes de exportar.','warning');
   const r=state.lastResult;
   const rows=[['indicador','valor'],['produto',r.product?.name||''],['demanda prevista',r.demandForecast],['produção atual',r.currentProduction],['excedente',r.surplus],['economia estimada',r.financialReduction],['energia evitada kWh',r.energySavedKwh||0]];
-  const csv='\uFEFF'+rows.map(row=>row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')).join('\n');
+  const csv='\uFEFF'+rows.map(row=>row.map(v=>`"${String(v??'').replace(/^[=+@\-\t\r\n]/,m=>"'"+m).replace(/"/g,'""')}"`).join(';')).join('\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');const url=URL.createObjectURL(blob);a.href=url;a.download='resultado-cpp.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
 

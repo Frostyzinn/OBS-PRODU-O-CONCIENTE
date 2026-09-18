@@ -6,8 +6,9 @@
     const actions=top.querySelector('.actions');
     const status=document.createElement('div');
     status.className='live-status';
-    status.innerHTML='<i class="live-dot"></i><span>SISTEMA ONLINE</span><span class="live-time"></span>';
+    status.innerHTML='<span>HOJE</span><span class="status-date"></span><span class="live-time"></span>';
     (actions||top).prepend(status);
+    status.querySelector('.status-date').textContent=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
     const time=status.querySelector('.live-time');
     const tick=()=>{const d=new Date();time.textContent=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})};
     tick();setInterval(tick,30000);

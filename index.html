@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Produção Consciente — Painel</title>
-<link rel="stylesheet" href="css/tokens.css"><link rel="stylesheet" href="css/layout.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/motion.css">
+<link rel="stylesheet" href="css/tokens.css"><link rel="stylesheet" href="css/layout.css"><link rel="stylesheet" href="css/components.css"><link rel="stylesheet" href="css/motion.css"><link rel="stylesheet" href="css/professional.css">
 <link rel="icon" type="image/png" href="assets/logo-producao-consciente.png"></head><body data-page="dashboard">
 <aside class="sidebar"><div class="brand"><span class="brand-mark logo-mark"><img src="assets/logo-producao-consciente.png" alt="Logo Produção Consciente"></span><div><strong>Produção</strong><small>Consciente</small></div></div>
 <nav>
@@ -21,9 +21,9 @@
 <a href="equipe.html" class="admin-only" data-nav="equipe.html">◉ <span>Equipe</span></a>
 <a href="configuracoes.html" data-nav="configuracoes.html">⚙ <span>Configurações</span></a>
 </nav>
-<div class="sidebar-bottom"><a href="apresentacao.html">Sobre o sistema</a><a href="login.html" onclick="sessionStorage.clear()">Sair</a></div></aside>
-<main class="main"><header class="topbar"><div><p class="eyebrow">PAINEL DE CONTROLE</p><h1>Painel</h1><p class="muted">Visão da demanda e da produção informadas pela empresa.</p></div><div class="actions"><a class="btn secondary" href="calculadora-cpp.html">Calculadora CPP</a><a class="btn primary" href="produtos.html">+ Novo produto</a></div></header>
-<section class="notice"><strong>Como funciona:</strong> informe produtos e histórico de vendas. A demanda prevista e o excedente são calculados automaticamente pela Média Móvel Simples. O CPP é uma etapa posterior.</section>
+<div class="sidebar-bottom"><a href="apresentacao.html">Sobre o sistema</a><a href="login.html" data-logout>Sair</a></div></aside>
+<a class="skip-link" href="#conteudo">Ir para o conteúdo</a><main class="main" id="conteudo"><header class="topbar"><div><p class="eyebrow">PAINEL DE CONTROLE</p><h1>Visão geral</h1><p class="muted">Sua operação em perspectiva. Planeje hoje, produza melhor amanhã.</p></div><div class="actions"><a class="btn secondary" href="calculadora-cpp.html">Calculadora CPP</a><a class="btn primary" href="produtos.html">+ Novo produto</a></div></header>
+<section class="notice"><strong>Decisões guiadas por dados.</strong> Cadastre seus produtos e as vendas mensais para acompanhar a demanda e identificar oportunidades de reduzir excedentes.</section>
 <section class="kpi-grid">
 <article class="kpi neutral"><span>Demanda prevista</span><strong id="kpi-demand">0</strong><small>unidades</small></article>
 <article class="kpi neutral"><span>Produção atual</span><strong id="kpi-production">0</strong><small>unidades</small></article>
@@ -31,7 +31,7 @@
 <article class="kpi success"><span>Economia estimada</span><strong id="kpi-saving">R$ 0,00</strong><small>antes do CPP</small></article>
 </section>
 <section class="grid-2">
-<article class="panel"><div class="panel-head"><div><p class="eyebrow">PREVISÃO</p><h2>Média Móvel Simples</h2></div><span class="badge blue" id="periods-label">0 períodos</span></div><canvas id="demandChart" height="230"></canvas></article>
+<article class="panel"><div class="panel-head"><div><p class="eyebrow">PREVISÃO</p><h2>Vendas e demanda prevista</h2></div><span class="badge blue" id="periods-label">0 períodos</span></div><p class="muted" id="chart-product"></p><canvas id="demandChart" height="230" role="img" aria-label="Histórico de vendas e previsão do produto selecionado"></canvas><div class="chart-legend"><span>Vendas realizadas</span><span>Próximo período</span></div></article>
 <article class="panel"><div class="panel-head"><div><p class="eyebrow">RESUMO</p><h2>Situação da produção</h2></div></div><div id="summaryBox" class="summary-box"></div></article>
 </section>
 <section class="panel"><div class="panel-head"><div><p class="eyebrow">PRODUTOS</p><h2>Produtos cadastrados</h2></div><a href="produtos.html" class="text-link">Gerenciar →</a></div>

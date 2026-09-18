@@ -10,6 +10,25 @@ const statusLabel={planned:'Planejada',in_progress:'Em produção',completed:'Co
 function statusText(value){return statusLabel[value]||value||'—'}
 const auditActionLabel={CREATE:'Cadastro',UPDATE:'Atualização',DELETE:'Exclusão',LOGIN:'Acesso ao sistema',LOGOUT:'Saída do sistema',APPROVE:'Aprovação',REJECT:'Recusa',BLOCK:'Bloqueio'};
 const auditEntityLabel={product:'Produto',products:'Produtos',stock:'Estoque',raw_material:'Matéria-prima',production_order:'Ordem de produção',planning:'Planejamento',goal:'Meta',buyer:'Comprador',sale:'Venda',cpp_report:'Relatório CPP',user:'Usuário',company:'Empresa'};
-function auditActionText(value){return auditActionLabel[value]||value||'—'}
+function auditActionText(value){return auditActionLabel[String(value).toUpperCase()]||value||'—'}
 function auditEntityText(value){return auditEntityLabel[value]||value||'—'}
 window.pcUtils={fmt,money,decimal,escapeHtml,currentPeriod,setMsg,statusText,auditActionText,auditEntityText};
+
+// A saída revoga a sessão no servidor, inclusive se o cookie for reutilizado.
+document.addEventListener('click',async event=>{
+ const link=event.target.closest('[data-logout]');if(!link)return;
+ event.preventDefault();if(link.dataset.busy)return;link.dataset.busy='true';
+ try{
+  const response=await fetch('/api/v1/auth/logout',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-PC-Request':'1'},body:'{}'});
+  if(!response.ok)throw new Error('Não foi possível encerrar a sessão. Tente novamente.');
+  sessionStorage.removeItem('pc_user');sessionStorage.removeItem('pc_token');location.href='login.html';
+ }catch(error){alert(error.message)}finally{delete link.dataset.busy}
+});
+
+document.addEventListener('click',event=>{if(event.target.closest('[data-print]'))window.print()});
+document.addEventListener('click',event=>{
+ if(!event.target.closest('[data-export-table]'))return;
+ const table=document.querySelector('table');if(!table)return;
+ const csv='\uFEFF'+[...table.rows].map(row=>[...row.cells].map(cell=>'"'+cell.textContent.trim().replace(/^[=+@\-\t\r\n]/,m=>"'"+m).replace(/"/g,'""')+'"').join(';')).join('\r\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download='relatorio-cpp.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});

@@ -10,10 +10,10 @@ module.exports = async function handler(req, res) {
     return app(req, res);
   } catch (error) {
     databaseReady = null;
-    console.error('Falha ao inicializar banco:', error);
+    console.error('Falha ao inicializar banco:', error.code||error.name);
     return res.status(503).json({
       ok: false,
-      error: 'Banco de dados indisponível. Verifique as variáveis MYSQL_* na Vercel.'
+      error: 'Serviço temporariamente indisponível. Tente novamente em instantes.'
     });
   }
 };

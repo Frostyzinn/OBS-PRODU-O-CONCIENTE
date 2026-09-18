@@ -10,7 +10,8 @@ const baseConfig = {
   waitForConnections: true,
   connectionLimit: Number(process.env.MYSQL_POOL_SIZE || 10),
   queueLimit: 0,
-  charset: 'utf8mb4'
+  charset: 'utf8mb4',
+  ...(process.env.MYSQL_SSL === 'true' ? {ssl:{rejectUnauthorized:process.env.MYSQL_SSL_REJECT_UNAUTHORIZED !== 'false'}} : {})
 };
 let pool;
 function qi(name){ if(!/^[A-Za-z0-9_]+$/.test(name)) throw new Error('Identificador MySQL inválido.'); return `\`${name}\``; }
@@ -19,7 +20,7 @@ async function indexExists(table,index){ const [r]=await pool.query('SELECT 1 FR
 async function addColumn(table,column,definition,after=''){ if(!(await columnExists(table,column))) await pool.query(`ALTER TABLE ${qi(table)} ADD COLUMN ${qi(column)} ${definition}${after?` AFTER ${qi(after)}`:''}`); }
 async function addIndex(table,index,definition){ if(!(await indexExists(table,index))) await pool.query(`ALTER TABLE ${qi(table)} ADD INDEX ${qi(index)} ${definition}`); }
 
-async function initDatabase(){
+async function initDatabase(options={}){
   // Em provedores gerenciados (Vercel + MySQL externo), normalmente o usuário
   // não tem permissão para CREATE DATABASE. Por padrão mantemos a criação para
   // desenvolvimento local; defina MYSQL_AUTO_CREATE_DATABASE=false na Vercel.
@@ -36,7 +37,9 @@ async function initDatabase(){
   }
   pool=mysql.createPool({...baseConfig,database:DB_NAME});
   await pool.query('SELECT 1');
-  await createTables();
+  const migrate=options.migrate??(process.env.MYSQL_MIGRATE_ON_START==='true'||process.env.NODE_ENV!=='production');
+  if(migrate)await createTables();
+  else{await pool.query('SELECT token_hash FROM user_sessions LIMIT 0');await pool.query('SELECT bucket FROM security_rate_limits LIMIT 0');}
   console.log(`MySQL conectado: ${baseConfig.host}:${baseConfig.port}/${DB_NAME}`);
 }
 
@@ -62,6 +65,9 @@ async function createTables(){
   await pool.query(`CREATE TABLE IF NOT EXISTS production_plans (id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT, company_id BIGINT UNSIGNED NOT NULL, user_id BIGINT UNSIGNED NOT NULL, product_id BIGINT UNSIGNED NOT NULL, period CHAR(7) NOT NULL, planned_quantity DECIMAL(15,3) NOT NULL DEFAULT 0, target_sales DECIMAL(15,3) NOT NULL DEFAULT 0, priority ENUM('high','medium','low') NOT NULL DEFAULT 'medium', status ENUM('planned','in_progress','done','cancelled') NOT NULL DEFAULT 'planned', note VARCHAR(255) NULL, created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(id), UNIQUE KEY uq_plan_company_product_period(company_id,product_id,period), KEY idx_plan_company_period(company_id,period), FOREIGN KEY(company_id) REFERENCES companies(id) ON DELETE CASCADE, FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE, FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE RESTRICT) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`);
   await pool.query(`CREATE TABLE IF NOT EXISTS company_goals (id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT, company_id BIGINT UNSIGNED NOT NULL, user_id BIGINT UNSIGNED NOT NULL, title VARCHAR(160) NOT NULL, metric VARCHAR(60) NOT NULL, target_value DECIMAL(18,3) NOT NULL DEFAULT 0, current_value DECIMAL(18,3) NOT NULL DEFAULT 0, period CHAR(7) NOT NULL, status ENUM('active','done','cancelled') NOT NULL DEFAULT 'active', created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(id), KEY idx_goals_company_period(company_id,period), FOREIGN KEY(company_id) REFERENCES companies(id) ON DELETE CASCADE, FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`);
 
+  await pool.query("CREATE TABLE IF NOT EXISTS user_sessions (token_hash CHAR(64) NOT NULL PRIMARY KEY,user_id BIGINT UNSIGNED NOT NULL,expires_at DATETIME NOT NULL,last_seen_at DATETIME NOT NULL,KEY idx_session_user(user_id),KEY idx_session_expiry(expires_at),KEY idx_session_idle(last_seen_at),CONSTRAINT fk_session_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE) ENGINE=InnoDB");
+  await pool.query("CREATE TABLE IF NOT EXISTS security_rate_limits (bucket CHAR(64) NOT NULL PRIMARY KEY,hits INT UNSIGNED NOT NULL DEFAULT 0,expires_at DATETIME NOT NULL,KEY idx_limit_expiry(expires_at)) ENGINE=InnoDB");
+  await pool.query('DELETE FROM security_rate_limits WHERE expires_at<=UTC_TIMESTAMP()');
   // Migração de instalações antigas para multiempresa, preservando os dados existentes.
   await addColumn('users','company_name',"VARCHAR(160) NOT NULL DEFAULT 'Minha empresa'",'name');
   await addColumn('users','company_id','BIGINT UNSIGNED NULL','password_hash');

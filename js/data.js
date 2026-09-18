@@ -1,6 +1,6 @@
 const API_BASE='/api/v1';
-function authHeaders(extra={}){const token=sessionStorage.getItem('pc_token');return {...extra,...(token?{Authorization:`Bearer ${token}`}:{})};}
-async function api(path,options={}){const headers=authHeaders({'Content-Type':'application/json',...(options.headers||{})});const res=await fetch(API_BASE+path,{...options,headers});let data={};try{data=await res.json()}catch{}if(!res.ok){if(res.status===401){sessionStorage.removeItem('pc_token');sessionStorage.removeItem('pc_user');if(!location.pathname.endsWith('login.html'))location.href='login.html'}throw new Error(data.error||'Erro na API')}return data}
+function authHeaders(extra={}){return {...extra,"X-PC-Request":"1"};}
+async function api(path,options={}){const headers=authHeaders({'Content-Type':'application/json',...(options.headers||{})});const res=await fetch(API_BASE+path,{...options,headers,credentials:"same-origin"});let data={};try{data=await res.json()}catch{}if(!res.ok){if(res.status===401||res.status===403&&data.error?.startsWith("Acesso indisponível")){sessionStorage.removeItem('pc_token');sessionStorage.removeItem('pc_user');if(!location.pathname.endsWith('login.html'))location.href='login.html'}throw new Error(data.error||'Erro na API')}return data}
 async function getMe(){return api('/auth/me')}
 async function getCompany(){return api('/companies/me')}
 async function updateCompany(data){return api('/companies/me',{method:'PUT',body:JSON.stringify(data)})}

@@ -1,7 +1,9 @@
 require('dotenv').config();
+if(process.env.NODE_ENV==='production')throw new Error('O seed de demonstração não pode rodar em produção.');
 const bcrypt=require('bcryptjs');
-const {get,run,transaction,close}=require('../db/database');
+const {initDatabase,get,run,transaction,close}=require('../db/database');
 (async()=>{try{
+  await initDatabase();
   const cnpj='12345678000195',email='demo@producao.com';
   let company=await get('SELECT id FROM companies WHERE cnpj=?',[cnpj]);
   if(!company){const r=await run('INSERT INTO companies(cnpj,legal_name,trade_name,email,phone,city,state) VALUES(?,?,?,?,?,?,?)',[cnpj,'Produção Consciente Demonstração Ltda.','PC Materiais','demo@producao.com','(86) 99999-0000','Teresina','PI']);company={id:r.id};}

@@ -11,21 +11,21 @@
 
   document.addEventListener('DOMContentLoaded',async()=>{
     const page=pageName();
-    if(!PUBLIC_PAGES.includes(page)&&!sessionStorage.getItem('pc_token')){location.href='login.html';return}
+    sessionStorage.removeItem('pc_token');
     try{
       if(!PUBLIC_PAGES.includes(page)) await setupShell(page);
       if(document.body.dataset.page==='dashboard') await renderDashboard(await getDashboardData());
-      if(typeof renderDashboardControl==='function') renderDashboardControl();
-      if(document.getElementById('productForm')&&typeof renderProductsPage==='function') renderProductsPage();
-      if(document.getElementById('salesTable')&&typeof renderSales==='function') renderSales();
-      if(document.getElementById('buyersTable')&&typeof renderBuyers==='function') renderBuyers();
-      if(document.getElementById('cppTable')&&typeof renderCpp==='function') renderCpp(await getDashboardData());
-      if(document.getElementById('stockTable')&&typeof renderStockPage==='function') renderStockPage();
-      if(document.getElementById('productionTable')&&typeof renderProductionPage==='function') renderProductionPage();
-      if(document.getElementById('planningTable')&&typeof renderPlanningPage==='function') renderPlanningPage();
-      if(document.getElementById('goalsTable')&&typeof renderGoalsPage==='function') renderGoalsPage();
-      if(document.getElementById('managementReport')&&typeof renderReportsPage==='function') renderReportsPage();
-      if(document.getElementById('auditTable')&&typeof renderAuditPage==='function') renderAuditPage();
+      if(typeof renderDashboardControl==='function') await renderDashboardControl();
+      if(document.getElementById('productForm')&&typeof renderProductsPage==='function') await renderProductsPage();
+      if(document.getElementById('salesTable')&&typeof renderSales==='function') await renderSales();
+      if(document.getElementById('buyersTable')&&typeof renderBuyers==='function') await renderBuyers();
+      if(document.getElementById('cppTable')&&typeof renderCpp==='function') await renderCpp(await getDashboardData());
+      if(document.getElementById('stockTable')&&typeof renderStockPage==='function') await renderStockPage();
+      if(document.getElementById('productionTable')&&typeof renderProductionPage==='function') await renderProductionPage();
+      if(document.getElementById('planningTable')&&typeof renderPlanningPage==='function') await renderPlanningPage();
+      if(document.getElementById('goalsTable')&&typeof renderGoalsPage==='function') await renderGoalsPage();
+      if(document.getElementById('managementReport')&&typeof renderReportsPage==='function') await renderReportsPage();
+      if(document.getElementById('auditTable')&&typeof renderAuditPage==='function') await renderAuditPage();
     }catch(err){
       const target=document.querySelector('.main')||document.body;
       target.insertAdjacentHTML('afterbegin',`<div class="notice warning-note app-error"><strong>Não foi possível carregar esta tela.</strong><br>${escapeHtml(err.message||'Erro inesperado.')}</div>`);
@@ -38,9 +38,7 @@
       const data=await getMe();
       user=data.user;
       sessionStorage.setItem('pc_user',JSON.stringify(user));
-    }catch{
-      try{user=JSON.parse(sessionStorage.getItem('pc_user')||'null')}catch{user=null}
-    }
+    }catch(err){ throw err; }
     if(!user) return;
 
     const company=user.companyName||'Minha empresa';
@@ -66,7 +64,7 @@
       const wrap=document.createElement('div');
       wrap.className='company-name';
       wrap.innerHTML=`<strong>${escapeHtml(company)}</strong><small>${escapeHtml(name)} · ${escapeHtml(roleLabels[role]||role)}</small>`;
-      brand.appendChild(wrap);
+      document.querySelector('.sidebar-bottom').prepend(wrap);
     }
 
     const top=document.querySelector('.topbar');
@@ -115,6 +113,7 @@
       overlay.className='mobile-overlay';
       overlay.addEventListener('click',closeMenu);
       document.body.appendChild(overlay);
+      document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();btn.focus()}});
       sidebar.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
       function closeMenu(){sidebar.classList.remove('open');btn.setAttribute('aria-expanded','false');document.body.classList.remove('menu-open')}
     }

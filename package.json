@@ -7,17 +7,20 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "seed": "node scripts/seed.js",
-    "db:init": "node -e \"require('./db/database').initDatabase().then(()=>require('./db/database').close())\""
+    "db:init": "node -e \"require('./db/database').initDatabase({migrate:true}).then(()=>require('./db/database').close())\"",
+    "build": "node scripts/build.cjs",
+    "test:integration": "node scripts/verify.cjs",
+    "test:security": "node scripts/security-test.cjs",
+    "test:security:config": "node scripts/security-config-test.cjs"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2",
+    "helmet": "^8.3.0",
     "mysql2": "^3.11.5"
   }
 }

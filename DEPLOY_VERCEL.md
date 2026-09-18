@@ -1,58 +1,30 @@
 # Deploy na Vercel
 
-## 1. Banco MySQL
-Crie um banco MySQL externo (a Vercel não fornece MySQL). O banco precisa estar acessível pela internet.
+O projeto utiliza funções Express (`api/`) e um MySQL externo. Railway continua sendo a opção recomendada para manter aplicação e banco no mesmo projeto; veja HOSPEDAGEM.md.
 
-## 2. Variáveis de ambiente na Vercel
-Em **Project Settings → Environment Variables**, configure:
+1. Envie o código ao repositório, excluindo `.env`, `node_modules/` e dados locais.
+2. Crie o banco MySQL com TLS ou rede privada adequada ao provedor.
+3. Execute `npm run db:init` contra esse banco usando uma credencial de migração. O comando cria as tabelas operacionais, sessões e limites de requisição.
+4. Configure no projeto Vercel:
 
 ```text
-MYSQL_HOST=...
+NODE_ENV=production
+APP_ORIGIN=https://seu-dominio.com
+MYSQL_HOST=host-do-banco
 MYSQL_PORT=3306
-MYSQL_DATABASE=producao_consciente
-MYSQL_USER=...
-MYSQL_PASSWORD=...
+MYSQL_DATABASE=nome-do-banco
+MYSQL_USER=usuario-da-aplicacao
+MYSQL_PASSWORD=senha-exclusiva
+MYSQL_POOL_SIZE=3
 MYSQL_AUTO_CREATE_DATABASE=false
-MYSQL_SSL=false
+MYSQL_SSL=true
 MYSQL_SSL_REJECT_UNAUTHORIZED=true
-JWT_SECRET=uma-chave-longa-e-aleatoria
-CORS_ORIGIN=true
 ```
 
-Se o provedor exigir SSL, use `MYSQL_SSL=true`. Em geral, mantenha `MYSQL_SSL_REJECT_UNAUTHORIZED=true`; só altere isso se o provedor documentar que o certificado não pode ser validado.
+APP_ORIGIN deve corresponder ao domínio usado pelos clientes, sem barra final. Cada ambiente de preview precisa de sua própria origem e banco. JWT_SECRET e CORS_ORIGIN não são mais usados.
 
-## 3. Deploy
-Suba **todos os arquivos da pasta raiz** para o GitHub e importe o repositório na Vercel.
+O runtime pode utilizar uma credencial com SELECT, INSERT, UPDATE e DELETE somente no banco da aplicação. Não habilite MYSQL_MIGRATE_ON_START no serviço público. O proxy de confiança deve ser configurado segundo as redes documentadas pelo provedor; veja SEGURANCA.md.
 
-Não coloque o projeto dentro de uma subpasta no GitHub sem configurar o **Root Directory** corretamente.
+O build configurado gera `public/`, sem arquivos internos. Os cabeçalhos em vercel.json protegem também os arquivos estáticos. Nunca desative a validação de certificados MySQL para fazer uma conexão funcionar.
 
-## 4. O que foi corrigido nesta versão
-- A API agora usa uma função catch-all `api/[...path].js`, evitando problemas de roteamento das rotas `/api/v1/*` na Vercel.
-- O `vercel.json` não depende mais de rewrites para encaminhar a API.
-- O banco não tenta criar o database quando `MYSQL_AUTO_CREATE_DATABASE=false`, evitando erro de permissão comum em MySQL gerenciado.
-- A inicialização do banco é reaproveitada entre invocações serverless quando possível.
-- Foi adicionado suporte opcional a SSL do MySQL.
-- CSS, JS e imagens continuam sendo arquivos estáticos na raiz do projeto, portanto a Vercel os entrega diretamente.
-
-## 5. Teste depois do deploy
-Abra:
-
-```text
-https://SEU-PROJETO.vercel.app/api/v1/health
-```
-
-Resultado esperado:
-
-```json
-{"ok":true,"service":"Produção Consciente","database":"mysql",...}
-```
-
-Se retornar `503`, o problema está nas variáveis/acesso ao MySQL, e não no CSS.
-
-Depois teste:
-
-```text
-https://SEU-PROJETO.vercel.app/login.html
-```
-
-Faça login. O sistema deve redirecionar para `index.html` e carregar os dados.
+Após publicar, confira `/api/v1/health`, o cadastro e o login. Verifique as flags Secure/HttpOnly/SameSite do cookie, a revogação ao sair, os limites de acesso e os backups. Essa etapa remota ainda não foi executada nesta revisão.
