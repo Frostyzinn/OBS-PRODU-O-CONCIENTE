@@ -12,10 +12,11 @@
     "test:integration": "node scripts/verify.cjs",
     "test:security": "node scripts/security-test.cjs",
     "test:security:config": "node scripts/security-config-test.cjs",
-    "test:routing": "node scripts/routing-test.cjs"
+    "test:routing": "node scripts/routing-test.cjs",
+    "test:session": "node --test scripts/session-test.cjs"
   },
   "engines": {
-    "node": "22.x"
+    "node": "24.x"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

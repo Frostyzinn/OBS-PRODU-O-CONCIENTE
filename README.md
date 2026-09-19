@@ -2,7 +2,7 @@
 
 Sistema multiempresa para gestão de produtos, matérias-primas, estoque, produção, planejamento, vendas, compradores, CPP, metas, equipe e relatórios.
 
-Interface HTML/CSS/JavaScript com a paleta original azul blueprint + prata. Backend Node.js 22+ / Express e MySQL 8+. Sessões revogáveis em cookies HttpOnly; autorização e isolamento por empresa no servidor.
+Interface HTML/CSS/JavaScript com a paleta original azul blueprint + prata. Backend Node.js 24.x / Express e MySQL 8+. Sessões revogáveis em cookies HttpOnly; autorização e isolamento por empresa no servidor.
 
 ## Desenvolvimento
 

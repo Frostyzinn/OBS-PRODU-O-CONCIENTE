@@ -10,6 +10,11 @@ installSecurity(app);
 app.use(express.json({limit:'2mb'}));
 app.get('/api/health',(req,res)=>res.status(200).json({ok:true,service:'Produção Consciente'}));
 app.use('/api',validateBody);
+// Rejeitar credenciais ausentes/inválidas antes do limitador que usa MySQL.
+app.get('/api/v1/auth/me',(req,res,next)=>{
+  if(require('./middleware/auth').sessionHash(req))return next();
+  return res.status(401).json({error:'Autenticação necessária. Entre novamente.'});
+});
 app.use('/api/v1',rateLimit('api-ip',600,60));
 
 const authRoutes=require('./routes/auth');
@@ -55,6 +60,7 @@ app.use((err,req,res,next)=>{
   if(res.headersSent)return next(err);
   if(err.type==='entity.parse.failed')return res.status(400).json({error:'JSON inválido.'});
   if(err.type==='entity.too.large')return res.status(413).json({error:'Requisição muito grande.'});
+  if(['ECONNREFUSED','ECONNRESET','ETIMEDOUT','ENOTFOUND','PROTOCOL_CONNECTION_LOST','ER_CON_COUNT_ERROR'].includes(err.code))return res.status(503).json({code:'DATABASE_UNAVAILABLE',error:'Banco de dados temporariamente indisponível. Tente novamente em instantes.'});
   if(err.code==='ER_DUP_ENTRY')return res.status(409).json({error:'Já existe um registro com esses dados.'});
   if(['ER_ROW_IS_REFERENCED_2','ER_NO_REFERENCED_ROW_2'].includes(err.code))return res.status(409).json({error:'Este registro possui vínculos que impedem a operação.'});
   const status=Number.isInteger(err.status)&&err.status>=400&&err.status<500?err.status:500;

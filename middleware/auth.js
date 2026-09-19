@@ -37,4 +37,4 @@ async function auth(req,res,next){
  }catch(error){next(error)}
 }
 function requireRole(...roles){return(req,res,next)=>{if(!req.user?.companyId||!roles.includes(req.user.role))return res.status(403).json({error:'Você não tem permissão para esta ação.'});next()}}
-module.exports={auth,requireRole,issueSession,logout,clearSession};
+module.exports={auth,requireRole,issueSession,logout,clearSession,sessionHash};

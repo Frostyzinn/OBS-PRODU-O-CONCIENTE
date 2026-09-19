@@ -10,7 +10,7 @@ Configuração de build:
 - Build Command: `npm run build`.
 - Output Directory: `public`.
 - Root Directory: a pasta que contém `package.json`, `vercel.json` e `api/`.
-- Node.js: **22.x**, fixado no `package.json`.
+- Node.js: **24.x**, fixado no `package.json`.
 
 Envie os arquivos corrigidos, incluindo `package-lock.json`, para a branch conectada à Vercel e faça um novo deploy. Na primeira tentativa, desmarque a reutilização do cache de build. Não mova o backend para `public/` nem altere as variáveis de ambiente para resolver esse erro. Se o log continuar identificando o preset Express, confira se o deploy está usando o commit e o Root Directory corretos.
 

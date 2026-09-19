@@ -25,7 +25,7 @@ let server,origin,company,user,count=0;
   return response;
  }
  await request('/api/health',200);assert.equal(initializations,0,'Liveness não depende do MySQL');
- await request('/api/v1/auth/me',401);assert.equal(initializations,1);
+ await request('/api/v1/auth/me',401);assert.equal(initializations,0);
  await request('/api/v1/auth/me',401,{headers:{Authorization:'Bearer invalido'}});
  await request('/api/v1/nao-existe',404);
  await request('/api/v1/nao-existe',404,{method:'POST',headers:{'Content-Type':'application/json','X-PC-Request':'1'},body:'{}'});

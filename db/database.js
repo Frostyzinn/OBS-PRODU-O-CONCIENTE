@@ -35,7 +35,8 @@ async function initDatabase(options={}){
     await bootstrap.query(`CREATE DATABASE IF NOT EXISTS ${qi(DB_NAME)} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
     await bootstrap.end();
   }
-  pool=mysql.createPool({...baseConfig,database:DB_NAME});
+  // Reutilizar o pool também em tentativas após falhas de conexão.
+  pool=pool||mysql.createPool({...baseConfig,database:DB_NAME});
   await pool.query('SELECT 1');
   const migrate=options.migrate??(process.env.MYSQL_MIGRATE_ON_START==='true'||process.env.NODE_ENV!=='production');
   if(migrate)await createTables();

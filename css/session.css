@@ -1,0 +1,5 @@
+html[data-private]:not([data-auth="ready"]) body > :not(#authGate) { display: none !important; }
+html[data-auth="ready"] #authGate { display: none; }
+#authGate { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; background: #EFEDE8; color: #1B3A5C; font: 16px system-ui, sans-serif; }
+#authGate button { background: #2F6FB0; color: white; border: 0; border-radius: 8px; padding: 12px 20px; cursor: pointer; }
+#authGate a { color: #1B3A5C; }

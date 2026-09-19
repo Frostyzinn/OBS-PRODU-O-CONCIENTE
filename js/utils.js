@@ -19,9 +19,7 @@ document.addEventListener('click',async event=>{
  const link=event.target.closest('[data-logout]');if(!link)return;
  event.preventDefault();if(link.dataset.busy)return;link.dataset.busy='true';
  try{
-  const response=await fetch('/api/v1/auth/logout',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-PC-Request':'1'},body:'{}'});
-  if(!response.ok)throw new Error('Não foi possível encerrar a sessão. Tente novamente.');
-  sessionStorage.removeItem('pc_user');sessionStorage.removeItem('pc_token');location.href='login.html';
+  await pcSession.logout();
  }catch(error){alert(error.message)}finally{delete link.dataset.busy}
 });
 
