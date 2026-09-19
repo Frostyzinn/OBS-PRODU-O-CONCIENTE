@@ -3,7 +3,8 @@ const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
 const productBox=$('#cppProducts');
 const pageMsg=document.createElement('div');
 pageMsg.className='cpp-status hidden';
-if(productBox?.parentElement) productBox.parentElement.insertBefore(pageMsg,productBox);
+pageMsg.setAttribute('role','status');
+document.querySelector('.cpp-card')?.prepend(pageMsg);
 
 function showStatus(text,type='info'){
   pageMsg.textContent=text;
@@ -53,13 +54,14 @@ async function loadProducts(){
 
 function renderHistory(){
   $('#monthsText').textContent=state.n;
-  const existing=state.history.length?state.history.slice(-state.n):Array.from({length:state.n},(_,i)=>({period:monthLabel(i-state.n+1),quantity:''}));
-  while(existing.length<state.n) existing.unshift({period:monthLabel(existing.length-state.n),quantity:''});
+  const existing=state.history.length?state.history.slice(-state.n):Array.from({length:state.n},(_,i)=>({period:monthPeriod(i-state.n+1),quantity:''}));
+  while(existing.length<state.n) existing.unshift({period:monthPeriod(existing.length-state.n),quantity:''});
   state.history=existing.slice(-state.n);
-  $('#historyFields').innerHTML=state.history.map((r,i)=>`<label><span>${escapeHtml(r.period)}</span><div class="unit-input"><input data-h="${i}" type="number" min="0" step="1" value="${r.quantity}" placeholder="0"><em>un</em></div></label>`).join('');
+  $('#historyFields').innerHTML=state.history.map((r,i)=>`<label><span>${escapeHtml(monthLabel(r.period))}</span><div class="unit-input"><input data-h="${i}" type="number" min="0" step="1" value="${r.quantity}" placeholder="0"><em>un</em></div></label>`).join('');
   $$('[data-h]').forEach(x=>x.oninput=()=>state.history[Number(x.dataset.h)].quantity=x.value);
 }
-function monthLabel(offset){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+offset);return d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}).replace(/^./,c=>c.toUpperCase())}
+function monthPeriod(offset){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+offset);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}
+function monthLabel(period){const [year,month]=period.split('-').map(Number);return new Date(year,month-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'}).replace(/^./,c=>c.toUpperCase())}
 
 function renderMaterials(){
   const p=state.product;
@@ -91,6 +93,11 @@ function validateStep(){
 
 async function calculateResult(){
   if(!state.product)return;
+  state.lastResult=null;
+  for(const id of ['printResult','exportResult','exportCsv'])$('#'+id).disabled=true;
+  for(const id of ['rDemand','rProduction','rSurplus','rSaving','financialTotal'])$('#'+id).textContent='—';
+  $('#financialFormula').textContent='';
+  $('#materialResult').textContent='Calculando…';
   const vals=state.history.slice(-state.n).map(x=>({period:x.period,quantity:Number(x.quantity)||0}));
   const next=$('#nextBtn');
   try{
@@ -107,6 +114,7 @@ async function calculateResult(){
     if(Number(result.energySavedKwh)>0)materialHtml+=`<div class="breakdown-row"><div><b>Energia elétrica</b><small>Consumo estimado evitado</small></div><strong>${Number(result.energySavedKwh).toLocaleString('pt-BR',{maximumFractionDigits:2})} kWh</strong></div>`;
     $('#materialResult').innerHTML=materialHtml||'<div class="empty">Nenhum detalhamento de matéria-prima foi informado.</div>';
     state.lastResult=result;
+    for(const id of ['printResult','exportResult','exportCsv'])$('#'+id).disabled=false;
     showStatus('Simulação concluída. O resultado também foi salvo no histórico CPP.','success');
   }catch(err){
     showStatus(err.message||'Não foi possível calcular a simulação.','error');
